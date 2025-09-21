@@ -42,12 +42,12 @@ function M.config()
     },
 
     -- enable if you install nvim-ts-autotag
-    -- autotag = { enable = true },
+    autotag = { enable = true },
   }
 
   -- Treesitter-based folding
-  vim.opt.foldmethod = "expr"
-  vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+  --vim.opt.foldmethod = "expr"
+  --vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 end
 
 return M
