@@ -1,4 +1,4 @@
-llocal M = {
+local M = {
   "nvim-treesitter/nvim-treesitter",
   event = { "BufReadPost", "BufNewFile" },
   build = ":TSUpdate",
@@ -42,7 +42,7 @@ function M.config()
     },
 
     -- enable if you install nvim-ts-autotag
-    autotag = { enable = true },
+    -- autotag = { enable = true },
   }
 
   -- Treesitter-based folding
