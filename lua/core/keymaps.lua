@@ -5,6 +5,9 @@ vim.g.maplocalleader = " "
 local keymap = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
+-- Exit insert mode
+keymap("i", "jk", "<esc>", opts)
+
 -- Disable <Space> default mapping
 keymap("", "<Space>", "<Nop>", opts)
 
