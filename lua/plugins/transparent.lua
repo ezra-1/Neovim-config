@@ -14,7 +14,24 @@ require("transparent").setup({
     'EndOfBuffer',
   },
   -- table: additional groups that should be cleared
-  extra_groups = {},
+  extra_groups = {
+     -- Floating windows
+    "NormalFloat",
+    -- "FloatBorder",
+
+    -- cmp menu
+    -- "CmpPmenu",
+    -- "CmpPmenuSel",
+    -- "CmpPmenuBorder",
+    -- "CmpDoc",
+    -- "CmpDocBorder",
+    --
+    -- Pmenu fallback
+    -- "Pmenu",
+    -- "PmenuSel",
+    -- "PmenuSbar",
+    -- "PmenuThumb",
+    },
   -- table: groups you don't want to clear
   exclude_groups = {},
   -- function: code to be executed after highlight groups are cleared

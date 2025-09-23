@@ -22,7 +22,7 @@ function M.config()
     { "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Recent File" },
   }
 
-  local icons = require "user.icons"
+  local icons = require "plugins.icons"
   local actions = require "telescope.actions"
 
   require("telescope").setup {
@@ -72,8 +72,8 @@ function M.config()
       },
 
       find_files = {
-        theme = "dropdown",
-        previewer = false,
+        -- theme = "dropdown",
+        previewer = true,
       },
 
       buffers = {
