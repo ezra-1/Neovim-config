@@ -1,0 +1,21 @@
+# .stylua.toml
+
+# Indentation style
+indent_type = "Spaces"
+indent_width = 2
+
+# Keep code readable
+column_width = 100
+
+# Always prefer double quotes
+quote_style = "ForceDouble"
+
+# Always keep parentheses in function calls
+call_parentheses = "Always"
+
+# Sort require statements automatically
+sort_requires = true
+
+# Add trailing commas in multiline tables/functions
+trailing_comma = "Always"
+
