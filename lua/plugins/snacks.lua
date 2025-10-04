@@ -5,6 +5,7 @@ local M = {
 
 function M.config()
   require("snacks").setup {
+    -- 🪄 Input settings
     input = {
       enabled = true,
       default_prompt = "Input:",
@@ -26,11 +27,11 @@ function M.config()
       },
     },
 
+    -- 🔍 Select settings
     select = {
       enabled = true,
       backend = { "nui", "telescope", "fzf_lua", "fzf", "builtin" },
       trim_prompt = true,
-
       nui = {
         position = "50%",
         relative = "editor",
@@ -45,7 +46,6 @@ function M.config()
         min_width = 40,
         min_height = 10,
       },
-
       builtin = {
         border = "rounded",
         relative = "editor",
@@ -67,9 +67,9 @@ function M.config()
       },
     },
 
-    -- 👇 Add explorer here
+    -- 📁 File Explorer
     explorer = {
-      enabled = true,     -- 👈 must enable it
+      enabled = true,
       replace_netrw = true,
       auto_close = false,
       columns = { "icon", "permissions", "size", "mtime" },
@@ -78,14 +78,21 @@ function M.config()
       },
     },
 
-    -- 🔔 Notifications
+    -- 🔔 Transparent Notifier
     notifier = {
       enabled = true,
-      timeout = 3000, -- ms
+      timeout = 3000,
       top_down = true,
       max_width = 80,
-      icons = {},
+      background_colour = "#000000",
       level = vim.log.levels.INFO,
+      icons = {
+        error = " ",
+        warn  = " ",
+        info  = " ",
+        debug = " ",
+        trace = "✎ ",
+      },
     },
 
     -- 🧘 Zen Mode
@@ -108,12 +115,80 @@ function M.config()
         options = {},
       },
     },
+
+    -- 🌀 LazyGit Integration
+    lazygit = {
+      enabled = true,
+      win = {
+        border = "rounded",
+        relative = "editor",
+        width = 0.9,
+        height = 0.9,
+        row = 0.05,
+        col = 0.05,
+        style = "minimal",
+        focusable = true,
+        zindex = 50,
+        winblend = 20,
+      },
+    },
+
+    -- 🧠 Terminal Integration
+    terminal = {
+      enabled = true,
+      float = {
+        border = "rounded",
+        width = 0.9,
+        height = 0.9,
+        winblend = 15,
+        style = "minimal",
+      },
+      start_in_insert = true,
+      auto_close = false,
+      shell = vim.o.shell,
+    },
   }
 
-  local wk = require "which-key"
+  -- 🧩 Custom toggle for UFO folds
+  Snacks.toggle.new({
+    id = "ufo",
+    name = "Enable/Disable UFO folds",
+    get = function()
+      return require("ufo").inspect()
+    end,
+    set = function(state)
+      if state == nil then
+        require("noice").enable()
+        require("ufo").enable()
+        vim.o.foldenable = true
+        vim.o.foldcolumn = "1"
+      else
+        require("noice").disable()
+        require("ufo").disable()
+        vim.o.foldenable = false
+        vim.o.foldcolumn = "0"
+      end
+    end,
+  })
+
+  -- 🔑 Keymaps
+  local wk = require("which-key")
   wk.add {
-    { "<leader>e", function() require("snacks.explorer").open() end, desc = "Explorer" },
+    { "<leader>e",  function() require("snacks.explorer").open() end,         desc = "Explorer" },
+    { "<leader>z",  function() require("snacks.zen").zen() end,            desc = "Zen Mode" },
+    { "<leader>n",  function() require("snacks.notifier").show_history() end, desc = "Notifications" },
+    { "<leader>gg", function() require("snacks.lazygit").open() end,          desc = "LazyGit" },
+    { "<leader>;",  function() require("snacks.terminal").toggle() end,       desc = "Terminal" },
   }
+
+  -- 💾 Save notification
+  vim.api.nvim_create_autocmd("BufWritePost", {
+    callback = function(args)
+      local file = vim.fn.fnamemodify(args.file, ":t")
+      vim.notify("Saved " .. file .. " ✅", vim.log.levels.INFO, { title = "File Saved" })
+    end,
+  })
 end
 
 return M
+
