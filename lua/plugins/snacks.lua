@@ -75,7 +75,38 @@ function M.config()
       columns = { "icon", "permissions", "size", "mtime" },
       diagnostics = {
         enable = true,
-      }
+      },
+    },
+
+    -- 🔔 Notifications
+    notifier = {
+      enabled = true,
+      timeout = 3000, -- ms
+      top_down = true,
+      max_width = 80,
+      icons = {},
+      level = vim.log.levels.INFO,
+    },
+
+    -- 🧘 Zen Mode
+    zen = {
+      enabled = true,
+      toggles = {
+        ufo             = true,
+        dim             = true,
+        git_signs       = false,
+        diagnostics     = false,
+        line_number     = false,
+        relative_number = false,
+        signcolumn      = "no",
+        indent          = false,
+      },
+      window = {
+        backdrop = 0.95,
+        width = 0.7,
+        height = 0.9,
+        options = {},
+      },
     },
   }
 
