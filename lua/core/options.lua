@@ -63,7 +63,7 @@ opt.mouse = "a"
 opt.clipboard = "unnamedplus"
 
 -- Fonts (for GUI clients)
-opt.guifont = "monospace:h17"
+opt.guifont = "JetBrains Mono:h17"
 
 -- Keywords
 opt.iskeyword:append("-")
