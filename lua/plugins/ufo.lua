@@ -1,109 +1,112 @@
 local M = {
   "kevinhwang91/nvim-ufo",
-  dependencies = {
-    "kevinhwang91/promise-async",
-    "luukvbaal/statuscol.nvim",
-  },
+  dependencies = { "kevinhwang91/promise-async", "luukvbaal/statuscol.nvim" },
+  event = "BufReadPost",
 }
 
 function M.config()
-  local builtin = require "statuscol.builtin"
-  local cfg = {
-    setopt = true,
-    relculright = true,
-    segments = {
+  local function setup_ufo()
+    local builtin = require("statuscol.builtin")
 
-      { text = { builtin.foldfunc, " " }, click = "v:lua.ScFa", hl = "Comment" },
+    ---------------------------------------------------------------------------
+    -- 🧱 Status Column Setup
+    ---------------------------------------------------------------------------
+    require("statuscol").setup({
+      setopt = true,
+      relculright = true,
+      segments = {
+        { text = { builtin.foldfunc, " " }, click = "v:lua.ScFa", hl = "Comment" },
+        { text = { "%s" }, click = "v:lua.ScSa" },
+        { text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa" },
+      },
+    })
 
-      { text = { "%s" }, click = "v:lua.ScSa" },
-      { text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa" },
-    },
-  }
+    ---------------------------------------------------------------------------
+    -- 🧩 Folding Options
+    ---------------------------------------------------------------------------
+    vim.o.foldcolumn = "1"
+    vim.o.foldlevel = 99
+    vim.o.foldlevelstart = 99
+    vim.o.foldenable = true
+    vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
 
-  require("statuscol").setup(cfg)
+    ---------------------------------------------------------------------------
+    -- 🪶 Custom Fold Virtual Text Handler
+    ---------------------------------------------------------------------------
+    local handler = function(virtText, lnum, endLnum, width, truncate)
+      local newVirtText = {}
+      local suffix = (" 󰡏 %d "):format(endLnum - lnum)
+      local sufWidth = vim.fn.strdisplaywidth(suffix)
+      local targetWidth = width - sufWidth
+      local curWidth = 0
 
-  vim.o.foldcolumn = "1" -- '0' is not bad
-  vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
-  vim.o.foldlevelstart = 99
-  vim.o.foldenable = true
-  vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
-
-  -- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself
-  vim.keymap.set("n", "zR", require("ufo").openAllFolds)
-  vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
-
-  local handler = function(virtText, lnum, endLnum, width, truncate)
-    local newVirtText = {}
-    local suffix = (" 󰡏 %d "):format(endLnum - lnum)
-    local sufWidth = vim.fn.strdisplaywidth(suffix)
-    local targetWidth = width - sufWidth
-    local curWidth = 0
-    for _, chunk in ipairs(virtText) do
-      local chunkText = chunk[1]
-      local chunkWidth = vim.fn.strdisplaywidth(chunkText)
-      if targetWidth > curWidth + chunkWidth then
-        table.insert(newVirtText, chunk)
-      else
-        chunkText = truncate(chunkText, targetWidth - curWidth)
-        local hlGroup = chunk[2]
-        table.insert(newVirtText, { chunkText, hlGroup })
-        chunkWidth = vim.fn.strdisplaywidth(chunkText)
-        -- str width returned from truncate() may less than 2nd argument, need padding
-        if curWidth + chunkWidth < targetWidth then
-          suffix = suffix .. (" "):rep(targetWidth - curWidth - chunkWidth)
+      for _, chunk in ipairs(virtText) do
+        local chunkText, chunkWidth = chunk[1], vim.fn.strdisplaywidth(chunk[1])
+        if targetWidth > curWidth + chunkWidth then
+          table.insert(newVirtText, chunk)
+        else
+          chunkText = truncate(chunkText, targetWidth - curWidth)
+          table.insert(newVirtText, { chunkText, chunk[2] })
+          if curWidth + vim.fn.strdisplaywidth(chunkText) < targetWidth then
+            suffix = suffix .. (" "):rep(targetWidth - curWidth - chunkWidth)
+          end
+          break
         end
-        break
+        curWidth = curWidth + chunkWidth
       end
-      curWidth = curWidth + chunkWidth
+
+      table.insert(newVirtText, { suffix, "MoreMsg" })
+      return newVirtText
     end
-    table.insert(newVirtText, { suffix, "MoreMsg" })
-    return newVirtText
+
+    ---------------------------------------------------------------------------
+    -- 🧠 UFO Setup
+    ---------------------------------------------------------------------------
+    require("ufo").setup({
+      fold_virt_text_handler = handler,
+      close_fold_kinds = {},
+      provider_selector = function(_, filetype, _)
+        local ok, parsers = pcall(require, "nvim-treesitter.parsers")
+        if ok and parsers.has_parser(filetype) then
+          return { "treesitter", "indent" }
+        else
+          return { "indent" }
+        end
+      end,
+      preview = {
+        win_config = {
+          border = { "", "─", "", "", "", "─", "", "" },
+          winhighlight = "Normal:Folded",
+          winblend = 0,
+        },
+      },
+    })
+
+    ---------------------------------------------------------------------------
+    -- 🗝️ Keymaps
+    ---------------------------------------------------------------------------
+    vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "Open all folds" })
+    vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "Close all folds" })
+    vim.keymap.set("n", "zr", require("ufo").openFoldsExceptKinds, { desc = "Open folds except kinds" })
+    vim.keymap.set("n", "zm", require("ufo").closeFoldsWith, { desc = "Close folds with level" })
+    vim.keymap.set("n", "K", function()
+      local winid = require("ufo").peekFoldedLinesUnderCursor()
+      if not winid then
+        vim.lsp.buf.hover()
+      end
+    end, { desc = "Peek fold or hover" })
   end
 
-  local ftMap = {
-    -- typescriptreact = { "lsp", "treesitter" },
-    -- python = { "indent" },
-    -- git = "",
-  }
-
-  require("ufo").setup {
-    fold_virt_text_handler = handler,
-    close_fold_kinds = {},
-    -- close_fold_kinds = { "imports", "comment" },
-    provider_selector = function(bufnr, filetype, buftype)
-      -- if you prefer treesitter provider rather than lsp,
-      -- return ftMap[filetype] or {'treesitter', 'indent'}
-      return ftMap[filetype]
-      -- return { "treesitter", "indent" }
-
-      -- refer to ./doc/example.lua for detail
+  ---------------------------------------------------------------------------
+  -- 💤 Defer setup until dashboard is closed (Alpha or Snacks)
+  ---------------------------------------------------------------------------
+  vim.api.nvim_create_autocmd("User", {
+    pattern = { "AlphaClosed", "SnacksDashboardClosed" },
+    callback = function()
+      vim.schedule(setup_ufo)
     end,
-
-    preview = {
-      win_config = {
-        border = { "", "─", "", "", "", "─", "", "" },
-        winhighlight = "Normal:Folded",
-        winblend = 0,
-      },
-      mappings = {
-        scrollU = "<C-k>",
-        scrollD = "<C-j>",
-        jumpTop = "[",
-        jumpBot = "]",
-      },
-    },
-  }
-
-  vim.keymap.set("n", "zR", require("ufo").openAllFolds)
-  vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
-  vim.keymap.set("n", "zr", require("ufo").openFoldsExceptKinds)
-  vim.keymap.set("n", "zm", require("ufo").closeFoldsWith) -- closeAllFolds == closeFoldsWith(0)
-  vim.keymap.set("n", "K", function()
-    local winid = require("ufo").peekFoldedLinesUnderCursor()
-    if not winid then
-      vim.lsp.buf.hover()
-    end
-  end)
+  })
 end
 
 return M
+
