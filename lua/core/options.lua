@@ -1,5 +1,7 @@
 -- Neovim Options
 
+vim.g.python3_host_prog = vim.fn.expand("~/.venvs/nvim/bin/python3")
+
 local opt = vim.opt
 local g = vim.g
 
@@ -70,6 +72,7 @@ opt.iskeyword:append("-")
 
 -- Wrapping
 opt.whichwrap:append "<,>,[,],h,l"
+
 
 -- Netrw (if you use it)
 g.netrw_banner = 0
