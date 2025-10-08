@@ -111,7 +111,7 @@ Feel free to dive in, disable modules, or add your own.
 
 ## 📜 License
 
-This config is released under the **MIT License** — see [LICENSE](LICENSE) for details.
+This config is released under the **MIT License** — see [LICENSE](LICENSE.md) for details.
 
 ---
 
