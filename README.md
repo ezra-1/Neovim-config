@@ -1,87 +1,119 @@
-This configuration provides a modular starting point for anyone looking to use Neovim as an IDE. It’s designed to be simple, easy to understand, and highly extendable—you can use it as a complete setup or pick and choose individual components.
+# 🌀 Neovim Config by Ezra
 
-All included plugins are pinned to specific versions, ensuring compatibility and preventing unexpected updates from breaking your setup. With each new Neovim release, this repo will be updated alongside the community to stay current with the latest versions.
+[![Neovim Version](https://img.shields.io/badge/Neovim-0.11%2B-blue.svg)](#)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#)
 
-This setup is especially geared towards new Neovim users who want a familiar IDE-like experience. Its clean and straightforward structure makes it easy to add new plugins or customize existing ones.
+A **modular, stable, and easy-to-extend** Neovim configuration that blends an IDE-like experience with simplicity.  
+Use it as a full setup, or pick & choose modules — it’s built to scale.
 
-## Install Neovim 0.11+
+---
 
-You can install Neovim with your package manager e.g. brew, apt, pacman etc.. bus remember that when you update your packages Neovim may be upgraded to a newer version.
+## 🚀 Why This Config?
 
-If you would like to make sure Neovim only updates when you want it to than I recommend installing from source: [instructions](https://github.com/neovim/neovim/wiki/Installing-Neovim#install-from-source)
+I built this setup to strike a balance between:
 
-## Install the config
+- **Stability**: All plugins are pinned to versions to avoid sudden breaking updates  
+- **Clarity**: Modular structure with readable code  
+- **Flexibility**: You can enable, disable, or swap modules as you like  
+- **Beginner friendliness**: Clear documentation, defaults that “just work,” but room for customization
 
-Make sure to remove or backup your current `nvim` directory
+---
 
-```sh
+## ✨ Features
+
+- **Version‑pinned plugins** for reliability  
+- **Modular file structure** — each plugin or feature in its own file  
+- **IDE-Like features**: LSP, autocompletion, Treesitter, fuzzy file finder  
+- **Cross-platform support**: macOS, Linux (X11 / Wayland)  
+- **Clipboard integration**: `xsel`, `wl-clipboard`, `pbcopy`  
+- **Language tooling**: Python (via `pynvim`), optional Node support (for JS/TS tools)  
+- **Search tool**: `ripgrep` required for full fuzzy search power  
+
+---
+
+## 🛠 Installation
+
+> ⚠️ Make a backup of your existing `~/.config/nvim` if you have one
+
+```bash
 git clone https://github.com/ezra-1/Neovim-config.git ~/.config/nvim
 ```
 
-Run `nvim` and wait for the plugins to be installed
+Start Neovim:
 
-**NOTE** (You will notice treesitter pulling in a bunch of parsers the next time you open Neovim)
-
-## Get healthy
-
-Open `nvim` and enter the following:
-
+```bash
+nvim
 ```
+
+It will auto-install plugins.  
+Note: Treesitter may download many parsers on first run.
+
+---
+
+## 📦 Dependencies & Setup
+
+| Component | Purpose | Installation |
+|----------|---------|--------------|
+| `python-pynvim` | Python support | `pip install pynvim` |
+| `node + neovim` | JS/TS tooling | `npm i -g neovim` |
+| `ripgrep` | Fast fuzzy search | `sudo apt install ripgrep` (Linux) |
+| Clipboard tool | For copy/paste | `xsel` (X11) / `wl-clipboard` (Wayland) / `pbcopy` (macOS) |
+
+After installing, run in Neovim:
+
+```vim
 :checkhealth
 ```
 
-You'll probably notice you don't have support for copy/paste also that python and node haven't been setup
+---
 
-So let's fix that
+## ⚙ Configuration Overview
 
-First we'll fix copy/paste
+- `init.lua` — Entry point and module loader  
+- `lua/` — Folder containing modules like `plugins.lua`, `lsp.lua`, `settings.lua`  
+- `ft/` — Filetype-specific overrides  
+- `after/` — Final overrides to tweak plugin behavior  
 
-- On mac `pbcopy` should be builtin
-
-- On Ubuntu
-
-  ```sh
-  sudo apt install xsel # for X11
-  sudo apt install wl-clipboard # for wayland
-  ```
-
-Next we need to install python support (node is optional)
-
-- Neovim python support
-
-  ```sh
-  pip install pynvim
-  ```
-
-- Neovim node support
-
-  ```sh
-  npm i -g neovim
-  ```
-
-We will also need `ripgrep` for Telescope to work:
-
-- Ripgrep
-
-  ```sh
-  sudo apt install ripgrep
-  ```
+Feel free to dive in, disable modules, or add your own.
 
 ---
 
-**NOTE** make sure you have [node](https://nodejs.org/en/) installed, I recommend a node manager like [fnm](https://github.com/Schniz/fnm).
+## 💡 Usage Tips & Troubleshooting
 
-## Fonts
+1. **Check health**  
+   ```vim
+   :checkhealth
+   ```
+   It often shows missing dependencies (python, node, clipboard tool).
 
-I recommend using the following repo to get a "Nerd Font" (Font that supports icons)
+2. **Updating plugins**  
+   Use your plugin manager’s update command (e.g. `:PackerSync`).
 
-[getnf](https://github.com/ronniedroid/getnf)
+3. **Treesitter issues**  
+   If parsing fails, try `:TSUpdate`.
 
-**NOTE** Some are already setup as examples, remove them if you want
+4. **Better icons & symbols**  
+   Use a Nerd Font or patched font with glyph support.
+
+5. **Custom overrides**  
+   Use `after/` or `ft/` folders for overrides without touching main modules.
 
 ---
 
-> The computing scientist's main challenge is not to get confused by the complexities of his own making.
+## 🤝 Contributing & Support
 
-\- Edsger W. Dijkstra
-# Neovim-config
+- Feel free to open issues or PRs  
+- Add your own module or tweak existing ones  
+- Please follow code style (formatting, indentation) for consistency  
+- Optionally, I’m open to helping you adapt this config for your languages / workflows
+
+---
+
+## 📜 License
+
+This config is released under the **MIT License** — see [LICENSE](LICENSE) for details.
+
+---
+
+> “The computing scientist’s main challenge is not to get confused by the complexities of his own making.”  
+> — Edsger W. Dijkstra
