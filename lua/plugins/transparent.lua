@@ -3,41 +3,72 @@ local M = {
 }
 
 function M.config()
-   -- Optional, you don't have to run setup.
-require("transparent").setup({
-  -- table: default groups
-  groups = {
-    'Normal', 'NormalNC', 'Comment', 'Constant', 'Special', 'Identifier',
-    'Statement', 'PreProc', 'Type', 'Underlined', 'Todo', 'String', 'Function',
-    'Conditional', 'Repeat', 'Operator', 'Structure', 'LineNr', 'NonText',
-    'SignColumn', 'CursorLine', 'CursorLineNr', 'StatusLine', 'StatusLineNC',
-    'EndOfBuffer',
-  },
-  -- table: additional groups that should be cleared
-  extra_groups = {
-     -- Floating windows
-    "NormalFloat",
-    -- "FloatBorder",
-
-    -- cmp menu
-    -- "CmpPmenu",
-    -- "CmpPmenuSel",
-    -- "CmpPmenuBorder",
-    -- "CmpDoc",
-    -- "CmpDocBorder",
-    --
-    -- Pmenu fallback
-    -- "Pmenu",
-    -- "PmenuSel",
-    -- "PmenuSbar",
-    -- "PmenuThumb",
+  require("transparent").setup({
+    groups = {
+      "Normal",
+      "NormalNC",
+      "Comment",
+      "Constant",
+      "Special",
+      "Identifier",
+      "Statement",
+      "PreProc",
+      "Type",
+      "Underlined",
+      "Todo",
+      "String",
+      "Function",
+      "Conditional",
+      "Repeat",
+      "Operator",
+      "Structure",
+      "LineNr",
+      "NonText",
+      "SignColumn",
+      "CursorLine",
+      "CursorLineNr",
+      "StatusLine",
+      "StatusLineNC",
+      "EndOfBuffer",
     },
-  -- table: groups you don't want to clear
-  exclude_groups = {},
-  -- function: code to be executed after highlight groups are cleared
-  -- Also the user event "TransparentClear" will be triggered
-  on_clear = function() end,
-})
+    extra_groups = {
+      -- Floating + LSP
+      "NormalFloat",
+      "FloatBorder",
+      "FloatTitle",
+      "LspInfoBorder",
+      "LspInfoNormal",
+      "DiagnosticFloatingError",
+      "DiagnosticFloatingWarn",
+      "DiagnosticFloatingInfo",
+      "DiagnosticFloatingHint",
+
+      -- Telescope
+      "TelescopeNormal",
+      "TelescopeBorder",
+      "TelescopePromptNormal",
+      "TelescopePromptBorder",
+      "TelescopeResultsNormal",
+      "TelescopeResultsBorder",
+      "TelescopePreviewNormal",
+      "TelescopePreviewBorder",
+
+      -- CMP popup menu
+      "CmpPmenu",
+      "CmpPmenuSel",
+      "CmpPmenuBorder",
+      "CmpDoc",
+      "CmpDocBorder",
+
+      -- Pmenu fallback
+      -- "Pmenu",
+      -- "PmenuSel",
+      -- "PmenuSbar",
+      -- "PmenuThumb",
+    },
+    exclude_groups = {},
+  })
+
 end
 
 return M
