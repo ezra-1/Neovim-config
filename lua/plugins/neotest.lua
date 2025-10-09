@@ -13,6 +13,7 @@ local M = {
     "rouge8/neotest-rust",
     "lawrence-laz/neotest-zig",
     "rcasia/neotest-bash",
+    "nvim-neotest/neotest-jest",
   },
 }
 
@@ -24,20 +25,42 @@ function M.config()
     { "<leader>td", "<cmd>lua require('neotest').run.run({strategy = 'dap'})<cr>", desc = "Debug Test" },
     { "<leader>ts", "<cmd>lua require('neotest').run.stop()<cr>", desc = "Test Stop" },
     { "<leader>ta", "<cmd>lua require('neotest').run.attach()<cr>", desc = "Attach Test" },
+    { "<leader>to", "<cmd>lua require('neotest').summary.toggle()<cr>", desc = "Toggle Test Summary" },
   }
 
   ---@diagnostic disable: missing-fields
   require("neotest").setup {
     adapters = {
-      require "neotest-python" {
+      require("neotest-python") {
         dap = { justMyCode = false },
       },
-      require "neotest-vitest",
-      require "neotest-zig",
-      require "neotest-vim-test" {
+      require("neotest-vitest") {
+        vitestCommand = "npx vitest",
+        filterDir = function(name)
+          return name ~= "node_modules"
+        end,
+      },
+      require("neotest-jest") {
+        jestCommand = "npm test --",
+        jestConfigFile = "jest.config.ts",
+        env = { CI = true },
+        cwd = function() return vim.fn.getcwd() end,
+      },
+      require("neotest-zig"),
+      require("neotest-rust"),
+      require("neotest-plenary"),
+      require("neotest-bash"),
+      require("neotest-vim-test") {
         ignore_file_types = { "python", "vim", "lua", "javascript", "typescript" },
       },
     },
+    icons = {
+      running = "",
+      passed = "",
+      failed = "",
+      skipped = "",
+    },
+    output = { open_on_run = true },
   }
 end
 
