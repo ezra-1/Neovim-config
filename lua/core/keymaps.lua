@@ -12,10 +12,10 @@ keymap("i", "jk", "<esc>", opts)
 keymap("", "<Space>", "<Nop>", opts)
 
 -- Better window navigation with Alt
-keymap("n", "<M-h>", "<C-w>h", opts)
-keymap("n", "<M-j>", "<C-w>j", opts)
-keymap("n", "<M-k>", "<C-w>k", opts)
-keymap("n", "<M-l>", "<C-w>l", opts)
+keymap("n", "<M-H>", "<C-w>h", opts)
+keymap("n", "<M-J>", "<C-w>j", opts)
+keymap("n", "<M-K>", "<C-w>k", opts)
+keymap("n", "<M-L>", "<C-w>l", opts)
 keymap("n", "<M-Tab>", "<C-6>", opts) -- switch buffers
 
 -- Center search results
