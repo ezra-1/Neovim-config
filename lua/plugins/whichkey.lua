@@ -20,6 +20,8 @@ function M.config()
       { "<leader>p", group = "Plugins" },
       { "<leader>t", group = "Test" },
 
+      { "<leader>c", group = "Code companion"},
+
       { "<leader>a", group = "Tab" },
       { "<leader>aN", "<cmd>tabnew %<cr>", desc = "New Tab" },
       { "<leader>ah", "<cmd>-tabmove<cr>", desc = "Move Left" },
