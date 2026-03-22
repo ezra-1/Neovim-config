@@ -22,7 +22,7 @@ function M.config()
   })
 
   -- keymap
-  vim.keymap.set("n", "<leader>c", "<cmd>Themery<cr>", { desc = "Colorscheme Picker" })
+  vim.keymap.set("n", "<leader>c", "<cmd>Themery<cr>", { desc = "Colorscheme" })
 end
 
 return M
