@@ -1,4 +1,5 @@
 spec "plugins.cmp"
+spec "plugins.dap"
 spec "plugins.noice"
 spec "plugins.mason"
 spec "plugins.flash"
