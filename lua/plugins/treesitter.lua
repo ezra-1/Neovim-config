@@ -5,7 +5,7 @@ local M = {
 }
 
 function M.config()
-  require('nvim-treesitter').install { 'rust', 'javascript', 'zig', "lua" }
+  require('nvim-treesitter').install { 'rust', 'javascript', "typescript", 'zig', "lua", "tsx", "java" }
 end
 
 return M
