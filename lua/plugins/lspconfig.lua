@@ -2,128 +2,166 @@ local M = {
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
-    {
-      "folke/neodev.nvim",
-    },
+    "folke/neodev.nvim",
   },
 }
 
+-- =========================
+-- KEYMAPS (buffer-local)
+-- =========================
 local function lsp_keymaps(bufnr)
-  local opts = { noremap = true, silent = true }
-  local keymap = vim.api.nvim_buf_set_keymap
-  keymap(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", opts)
-  keymap(bufnr, "n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
-  keymap(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
-  keymap(bufnr, "n", "gI", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
-  keymap(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
-  keymap(bufnr, "n", "gl", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
+  local opts = { buffer = bufnr, silent = true }
+
+  vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+  vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+  vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+  vim.keymap.set("n", "gI", vim.lsp.buf.implementation, opts)
+  vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+  vim.keymap.set("n", "gl", vim.diagnostic.open_float, opts)
 end
 
+-- =========================
+-- ON ATTACH
+-- =========================
 M.on_attach = function(client, bufnr)
   lsp_keymaps(bufnr)
 
-  if client.supports_method "textDocument/inlayHint" then
-    vim.lsp.inlay_hint.enable(true, { bufnr })
+  if client:supports_method("textDocument/inlayHint") then
+    vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
   end
 end
 
+-- =========================
+-- CAPABILITIES
+-- =========================
 function M.common_capabilities()
   local capabilities = vim.lsp.protocol.make_client_capabilities()
   capabilities.textDocument.completion.completionItem.snippetSupport = true
   return capabilities
 end
 
-M.toggle_inlay_hints = function()
-  local bufnr = vim.api.nvim_get_current_buf()
-  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr }, { bufnr })
-end
-
+-- =========================
+-- CONFIG
+-- =========================
 function M.config()
-  local wk = require "which-key"
-  wk.add {
-    { "<leader>la", "<cmd>lua vim.lsp.buf.code_action()<cr>",                                                 desc = "Code Action" },
+  local wk = require("which-key")
+  local icons = require("ui.icons")
+
+  -- =========================
+  -- WHICH-KEY MAPS
+  -- =========================
+  wk.add({
+    { "<leader>l", group = "LSP" },
+
+    { "<leader>la", vim.lsp.buf.code_action, desc = "Code Action" },
+    { "<leader>laa", vim.lsp.buf.code_action, desc = "Code Action (Visual)", mode = "v" },
+
     {
       "<leader>lf",
-      "<cmd>lua vim.lsp.buf.format({async = true, filter = function(client) return client.name ~= 'typescript-tools' end})<cr>",
+      function()
+        vim.lsp.buf.format({
+          async = true,
+          filter = function(client)
+            return client.name ~= "typescript-tools"
+          end,
+        })
+      end,
       desc = "Format",
     },
-    { "<leader>lh", "<cmd>lua vim.diagnostic.open_float(0, { severity = vim.diagnostic.severity.HINT })<cr>", desc = "Hints" },
-    { "<leader>li", "<cmd>LspInfo<cr>",                                                                       desc = "Info" },
-    { "<leader>lj", "<cmd>lua vim.diagnostic.goto_next()<cr>",                                                desc = "Next Diagnostic" },
-    { "<leader>lk", "<cmd>lua vim.diagnostic.goto_prev()<cr>",                                                desc = "Prev Diagnostic" },
-    { "<leader>ll", "<cmd>lua vim.lsp.codelens.run()<cr>",                                                    desc = "CodeLens Action" },
-    { "<leader>lq", "<cmd>lua vim.diagnostic.setloclist()<cr>",                                               desc = "Quickfix" },
-    { "<leader>lr", "<cmd>lua vim.lsp.buf.rename()<cr>",                                                      desc = "Rename" },
-  }
 
-  wk.add {
-    { "<leader>la",  group = "LSP" },
-    { "<leader>laa", "<cmd>lua vim.lsp.buf.code_action()<cr>", desc = "Code Action", mode = "v" },
-  }
+    {
+      "<leader>lh",
+      function()
+        vim.diagnostic.open_float({
+          severity = vim.diagnostic.severity.HINT,
+        })
+      end,
+      desc = "Hints",
+    },
 
-  local icons = require "../ui.icons"
+    { "<leader>li", "<cmd>LspInfo<cr>", desc = "Info" },
 
+    {
+      "<leader>lj",
+      function()
+        vim.diagnostic.jump({ count = 1, float = true })
+      end,
+      desc = "Next Diagnostic",
+    },
+
+    {
+      "<leader>lk",
+      function()
+        vim.diagnostic.jump({ count = -1, float = true })
+      end,
+      desc = "Prev Diagnostic",
+    },
+
+    { "<leader>ll", vim.lsp.codelens.run, desc = "CodeLens Action" },
+    { "<leader>lq", vim.diagnostic.setloclist, desc = "Quickfix" },
+    { "<leader>lr", vim.lsp.buf.rename, desc = "Rename" },
+  })
+
+  -- =========================
+  -- DIAGNOSTICS CONFIG
+  -- =========================
+  vim.diagnostic.config({
+    virtual_text = false,
+    underline = true,
+    update_in_insert = false,
+    severity_sort = true,
+
+    signs = {
+      text = {
+        [vim.diagnostic.severity.ERROR] = icons.diagnostics.Error,
+        [vim.diagnostic.severity.WARN]  = icons.diagnostics.Warning,
+        [vim.diagnostic.severity.INFO]  = icons.diagnostics.Information,
+        [vim.diagnostic.severity.HINT]  = icons.diagnostics.Hint,
+      },
+    },
+
+    float = {
+      border = "rounded",
+      source = "if_many",
+    },
+  })
+
+  -- =========================
+  -- LSP UI
+  -- =========================
+  require("lspconfig.ui.windows").default_options.border = "rounded"
+
+  -- =========================
+  -- SERVERS
+  -- =========================
   local servers = {
     "lua_ls",
     "cssls",
     "html",
     "ts_ls",
     "eslint",
-    "ts_ls",
     "pyright",
     "bashls",
     "jsonls",
     "yamlls",
   }
 
-  local signs = {
-    Error = icons.diagnostics.Error,
-    Warn  = icons.diagnostics.Warning,
-    Hint  = icons.diagnostics.Hint,
-    Info  = icons.diagnostics.Information,
-  }
-
-  for type, icon in pairs(signs) do
-    vim.deprecate = function() end
-    local hl = "DiagnosticSign" .. type
-    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-  end
-
-  -- Diagnostic config
-  vim.diagnostic.config({
-    virtual_text = false,
-    signs = true, -- enable sign column
-    underline = true,
-    update_in_insert = false,
-    severity_sort = true,
-    float = {
-      focusable = true,
-      style = "minimal",
-      border = "rounded",
-      source = "always",
-    },
-  })
-
-  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
-  vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
-  require("lspconfig.ui.windows").default_options.border = "rounded"
-
-  for _, server in pairs(servers) do
+  for _, server in ipairs(servers) do
     local opts = {
       on_attach = M.on_attach,
       capabilities = M.common_capabilities(),
     }
 
-    local require_ok, settings = pcall(require, "plugins.lspsettings." .. server)
-    if require_ok then
+    local ok, settings = pcall(require, "plugins.lspsettings." .. server)
+    if ok then
       opts = vim.tbl_deep_extend("force", settings, opts)
     end
 
     if server == "lua_ls" then
-      require("neodev").setup {}
+      require("neodev").setup({})
     end
 
-    -- CORRECT: use lspconfig setup to avoid runtime error
+    vim.lsp.config(server, opts)
     vim.lsp.enable(server)
   end
 end
