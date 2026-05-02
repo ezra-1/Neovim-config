@@ -4,6 +4,7 @@ local M = {
   dependencies = {
     "rcarriga/nvim-dap-ui",
     "nvim-neotest/nvim-nio",
+    "jay-babu/mason-nvim-dap.nvim",
   },
 }
 
@@ -31,11 +32,16 @@ function M.config()
     linehl = "Visual",
   })
 
+  local dap_servers = {
+    "js",
+    "javadbg"
+  }
+
   -- =========================
   -- MASON DAP
   -- =========================
   require("mason-nvim-dap").setup({
-    ensure_installed = { "js" },
+    ensure_installed = dap_servers,
     automatic_installation = true,
   })
 
