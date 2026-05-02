@@ -1,34 +1,36 @@
 return {
   settings = {
     Lua = {
-      format = {
-        enable = false,
-      },
-      diagnostics = {
-        globals = { "vim", "spec" },
-      },
       runtime = {
         version = "LuaJIT",
         special = {
           spec = "require",
         },
       },
+
+      diagnostics = {
+        globals = { "vim", "spec" }, -- ✅ fixes undefined vim
+      },
+
       workspace = {
         checkThirdParty = false,
-        library = {
-          [vim.fn.expand "$VIMRUNTIME/lua"] = true,
-          [vim.fn.stdpath "config" .. "/lua"] = true,
-        },
+        library = vim.api.nvim_get_runtime_file("", true), -- ✅ better than manual paths
       },
+
+      format = {
+        enable = false,
+      },
+
       hint = {
         enable = false,
-        arrayIndex = "Disable", -- "Enable" | "Auto" | "Disable"
+        arrayIndex = "Disable",
         await = true,
-        paramName = "Disable", -- "All" | "Literal" | "Disable"
+        paramName = "Disable",
         paramType = true,
-        semicolon = "All", -- "All" | "SameLine" | "Disable"
+        semicolon = "All",
         setType = false,
       },
+
       telemetry = {
         enable = false,
       },
