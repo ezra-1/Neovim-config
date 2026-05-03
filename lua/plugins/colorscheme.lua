@@ -1,5 +1,22 @@
 local M = {
-  { "folke/tokyonight.nvim", lazy = false, priority = 1000 },
+  -- Default theme (loads first)
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      vim.cmd("colorscheme tokyonight")
+    end,
+  },
+
+  -- Other themes
+  {
+    "baliestri/aura-theme",
+    config = function(plugin)
+      vim.opt.rtp:prepend(plugin.dir .. "/packages/neovim")
+    end,
+  },
+
   { "rose-pine/neovim", name = "rose-pine" },
   { "catppuccin/nvim", name = "catppuccin" },
   { "EdenEast/nightfox.nvim" },
@@ -10,7 +27,7 @@ local M = {
   { "ellisonleao/gruvbox.nvim" },
   { "projekt0n/github-nvim-theme" },
   { "Mofiqul/dracula.nvim" },
-  { "ayu-theme/ayu-vim" },
+  { "shatur/neovim-ayu" },
   { "shaunsingh/solarized.nvim" },
   { "shaunsingh/nord.nvim" },
   { "martinsione/darkplus.nvim" },
