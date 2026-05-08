@@ -16,24 +16,63 @@ function M.config()
   null_ls.setup({
     debug = true,
     sources = {
-      -- 🧹 Formatting
+      -- =========================
+      -- 🧹 FORMATTERS
+      -- =========================
+
+      -- Lua formatter
       formatting.stylua,
+
+      -- Web formatter (JS/TS/HTML/CSS)
       formatting.prettier,
+
+      -- Python formatting
       formatting.black,
       formatting.isort,
 
-      -- 🔍 Diagnostics
-      -- diagnostics.flake8,
-      diagnostics.mypy,
-      -- diagnostics.luacheck,
+      -- Nix formatter (choose ONE)
+      formatting.alejandra, -- recommended (modern nix formatter)
+      -- formatting.nixfmt,  -- simpler alternative
 
-      -- 💡 Code Actions
+      -- Shell script formatter
+      formatting.shfmt, -- formats bash/sh scripts
+
+      -- =========================
+      -- 🔍 DIAGNOSTICS (linting)
+      -- =========================
+
+      -- Python type checking
+      diagnostics.mypy,
+
+      -- =========================
+      -- 💡 CODE ACTIONS
+      -- =========================
+
       code_actions.gitsigns,
 
-      -- ✍️ Completion
+      -- =========================
+      -- ✍️ COMPLETIONS
+      -- =========================
+
       completion.spell,
     },
   })
+
+  -- =========================
+  -- ⚡ AUTO FORMAT ON SAVE
+  -- =========================
+  --
+  -- This triggers formatting before saving a file.
+  -- Uses LSP/none-ls attached formatters.
+
+  -- vim.api.nvim_create_autocmd("BufWritePre", {
+  --   callback = function(args)
+  --     vim.lsp.buf.format({
+  --       bufnr = args.buf,
+  --       async = false,
+  --     })
+  --   end,
+  -- })
 end
 
 return M
